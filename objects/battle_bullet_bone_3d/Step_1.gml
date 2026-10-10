@@ -53,6 +53,10 @@ if (!enable) {
             add_edge(5, 2);
             add_edge(5, 3);
             add_edge(5, 4);
+            add_edge(1, 3);
+            add_edge(3, 2);
+            add_edge(2, 4);
+            add_edge(4, 1);
             break;
 
         case 3:
@@ -162,6 +166,36 @@ if (!enable) {
             add_edge(3, 11);
             add_edge(8, 10);
             add_edge(9, 11);
+            break;
+        case 5:
+            // Tesseract: sixteen 4D vertices and thirty-two edges. Edges are
+            // generated when two vertex indices differ by exactly one bit.
+            for(var tv=0;tv<16;tv++){
+                add_vert4((tv mod 2)*2-1,((tv div 2) mod 2)*2-1,((tv div 4) mod 2)*2-1,((tv div 8) mod 2)*2-1);
+            }
+            for(var te=0;te<16;te++){
+                for(var td=0;td<4;td++){
+                    var bit_value=1<<td;
+                    if((te & bit_value)==0) add_edge(te,te+bit_value);
+                }
+            }
+            break;
+        case 6:
+            // Four-sided pyramid. Nonuniform XYZ scale also turns the cube
+            // shape into any rectangular prism without a separate mesh.
+            add_vert(-1,-1,-1);
+            add_vert(1,-1,-1);
+            add_vert(1,1,-1);
+            add_vert(-1,1,-1);
+            add_vert(0,0,1);
+            add_edge(0,1);
+            add_edge(1,2);
+            add_edge(2,3);
+            add_edge(3,0);
+            add_edge(0,4);
+            add_edge(1,4);
+            add_edge(2,4);
+            add_edge(3,4);
             break;
     }
     update_vert();       // 更新顶点

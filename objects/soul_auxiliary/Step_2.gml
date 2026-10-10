@@ -37,7 +37,7 @@ if (STATE == BATTLE_STATE.TURN_PREPARATION || STATE == BATTLE_STATE.IN_TURN) {
     }
 
     if (isInside[1][0]) {
-        var nearestPos, nearestDis = -1; // 最近位置和最近距离
+        var nearestPos=undefined, nearestDis = -1; // 最近位置和最近距离
         for (var i = limit_index[0]; i < boardcount; i++) { // 遍历所有框
             // 得到限制位置和距离
             if (global.boards_array[i].cover && !global.boards_array[i].isCollide[0]) continue;
@@ -49,13 +49,15 @@ if (STATE == BATTLE_STATE.TURN_PREPARATION || STATE == BATTLE_STATE.IN_TURN) {
             }
 
         }
-        soul_position[0] = nearestPos[0] + battle_soul.sprite_width / 2;
-        soul_position[1] = nearestPos[1];
-        distance = nearestDis;
+        if(is_array(nearestPos)){
+            soul_position[0] = nearestPos[0] + battle_soul.sprite_width / 2;
+            soul_position[1] = nearestPos[1];
+            distance = nearestDis;
+        }
     }
 
     if (isInside[1][1]) {
-        var nearestPos, nearestDis = -1; // 最近位置和最近距离
+        var nearestPos=undefined, nearestDis = -1; // 最近位置和最近距离
         for (var i = limit_index[1]; i < boardcount; i++) { // 遍历所有框
             // 得到限制位置和距离
             if (global.boards_array[i].cover && !global.boards_array[i].isCollide[1]) continue;
@@ -67,7 +69,7 @@ if (STATE == BATTLE_STATE.TURN_PREPARATION || STATE == BATTLE_STATE.IN_TURN) {
                 nearestDis = dis;
             }
         }
-        if (distance < nearestDis) {
+        if (is_array(nearestPos)&&distance < nearestDis) {
             soul_position[0] = nearestPos[0] - battle_soul.sprite_width / 2;
             soul_position[1] = nearestPos[1];
             distance = nearestDis;
@@ -75,7 +77,7 @@ if (STATE == BATTLE_STATE.TURN_PREPARATION || STATE == BATTLE_STATE.IN_TURN) {
     }
 
     if (isInside[1][2]) {
-        var nearestPos, nearestDis = -1; // 最近位置和最近距离
+        var nearestPos=undefined, nearestDis = -1; // 最近位置和最近距离
         for (var i = limit_index[2]; i < boardcount; i++) { // 遍历所有框
             // 得到限制位置和距离
             if (global.boards_array[i].cover && !global.boards_array[i].isCollide[2]) continue;
@@ -86,7 +88,7 @@ if (STATE == BATTLE_STATE.TURN_PREPARATION || STATE == BATTLE_STATE.IN_TURN) {
                 nearestDis = dis;
             }
         }
-        if (distance < nearestDis) {
+        if (is_array(nearestPos)&&distance < nearestDis) {
             soul_position[0] = nearestPos[0];
             soul_position[1] = nearestPos[1] + battle_soul.sprite_height / 2;
             distance = nearestDis;
@@ -94,7 +96,7 @@ if (STATE == BATTLE_STATE.TURN_PREPARATION || STATE == BATTLE_STATE.IN_TURN) {
     }
 
     if (isInside[1][3]) {
-        var nearestPos, nearestDis = -1; // 最近位置和最近距离
+        var nearestPos=undefined, nearestDis = -1; // 最近位置和最近距离
         for (var i = limit_index[3]; i < boardcount; i++) { // 遍历所有框
             // 得到限制位置和距离
             if (global.boards_array[i].cover && !global.boards_array[i].isCollide[3]) continue;
@@ -106,7 +108,7 @@ if (STATE == BATTLE_STATE.TURN_PREPARATION || STATE == BATTLE_STATE.IN_TURN) {
                 nearestDis = dis;
             }
         }
-        if (distance < nearestDis) {
+        if (is_array(nearestPos)&&distance < nearestDis) {
             soul_position[0] = nearestPos[0];
             soul_position[1] = nearestPos[1] - battle_soul.sprite_height / 2;
         }
@@ -115,7 +117,7 @@ if (STATE == BATTLE_STATE.TURN_PREPARATION || STATE == BATTLE_STATE.IN_TURN) {
     y = soul_position[1];
     distance = -1;
     if (!isInside[0][0]) {
-        var nearestPos, nearestDis = -1; // 最近位置和最近距离
+        var nearestPos=undefined, nearestDis = -1; // 最近位置和最近距离
         for (var i = 0; i < boardcount; i++) { // 遍历所有框
             // 得到限制位置和距离
             if (!global.boards_array[i].cover) {
@@ -128,13 +130,15 @@ if (STATE == BATTLE_STATE.TURN_PREPARATION || STATE == BATTLE_STATE.IN_TURN) {
                 }
             }
         }
-        soul_position[0] = nearestPos[0] + battle_soul.sprite_width / 2;
-        soul_position[1] = nearestPos[1];
-        distance = nearestDis;
+        if(is_array(nearestPos)){
+            soul_position[0] = nearestPos[0] + battle_soul.sprite_width / 2;
+            soul_position[1] = nearestPos[1];
+            distance = nearestDis;
+        }
     }
 
     if (!isInside[0][1]) {
-        var nearestPos, nearestDis = -1; // 最近位置和最近距离
+        var nearestPos=undefined, nearestDis = -1; // 最近位置和最近距离
         for (var i = 0; i < boardcount; i++) { // 遍历所有框
             // 得到限制位置和距离
             if (!global.boards_array[i].cover) {
@@ -147,7 +151,7 @@ if (STATE == BATTLE_STATE.TURN_PREPARATION || STATE == BATTLE_STATE.IN_TURN) {
                 }
             }
         }
-        if (distance < nearestDis) {
+        if (is_array(nearestPos)&&distance < nearestDis) {
             soul_position[0] = nearestPos[0] - battle_soul.sprite_width / 2;
             soul_position[1] = nearestPos[1];
             distance = nearestDis;
@@ -156,7 +160,7 @@ if (STATE == BATTLE_STATE.TURN_PREPARATION || STATE == BATTLE_STATE.IN_TURN) {
     }
 
     if (!isInside[0][2]) {
-        var nearestPos, nearestDis = -1; // 最近位置和最近距离
+        var nearestPos=undefined, nearestDis = -1; // 最近位置和最近距离
         for (var i = 0; i < boardcount; i++) { // 遍历所有框
             // 得到限制位置和距离
             if (!global.boards_array[i].cover) {
@@ -169,7 +173,7 @@ if (STATE == BATTLE_STATE.TURN_PREPARATION || STATE == BATTLE_STATE.IN_TURN) {
                 }
             }
         }
-        if (distance < nearestDis) {
+        if (is_array(nearestPos)&&distance < nearestDis) {
             soul_position[0] = nearestPos[0];
             soul_position[1] = nearestPos[1] + battle_soul.sprite_height / 2;
             distance = nearestDis;
@@ -177,7 +181,7 @@ if (STATE == BATTLE_STATE.TURN_PREPARATION || STATE == BATTLE_STATE.IN_TURN) {
     }
 
     if (!isInside[0][3]) {
-        var nearestPos, nearestDis = -1; // 最近位置和最近距离
+        var nearestPos=undefined, nearestDis = -1; // 最近位置和最近距离
         for (var i = 0; i < boardcount; i++) { // 遍历所有框
             // 得到限制位置和距离
             if (!global.boards_array[i].cover) {
@@ -190,7 +194,7 @@ if (STATE == BATTLE_STATE.TURN_PREPARATION || STATE == BATTLE_STATE.IN_TURN) {
                 }
             }
         }
-        if (distance < nearestDis) {
+        if (is_array(nearestPos)&&distance < nearestDis) {
             soul_position[0] = nearestPos[0];
             soul_position[1] = nearestPos[1] - battle_soul.sprite_height / 2;
         }

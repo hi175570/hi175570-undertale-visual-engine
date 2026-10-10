@@ -1,5 +1,5 @@
-if(Encounter_IsExists(_encounter)&&instance_exists(char_player)){
-	if(_exclam){
+if(Encounter_IsExists(_encounter)){
+	if(_exclam&&instance_exists(char_player)){
 		var inst=instance_create_depth(0,0,0,exclamation);
 		inst.x=char_player.x;
 		inst.y=char_player.y-char_player.sprite_height;

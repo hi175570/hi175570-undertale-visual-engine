@@ -15,6 +15,7 @@ text_offset_x=0;
 text_offset_y=0;
 
 fast=false;
+requires_confirm=true;
 
 _inst=instance_create_depth(x-left+text_offset_x,y-up+text_offset_y,0,text_typer);
 

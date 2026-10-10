@@ -22,6 +22,11 @@ function Inventory(itemTypeManager,capacity) constructor{
 	function GetCapacity(){
 		return capacity;
 	}
+	function SetCapacity(value){
+		capacity=max(0,round(value));
+		Normalize();
+		return capacity;
+	}
 	function GetCount(){
 		return array_length(itemIds);
 	}

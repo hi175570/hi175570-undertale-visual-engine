@@ -1,5 +1,7 @@
-if (!battle_soul_aqua.type)
-	battle_soul_aqua.moveable = collision_circle(x, y, 30, battle_bullet, 0, 1);
+if (!battle_soul_aqua.type){
+	if(!variable_instance_exists(id,"radius")) radius=32;
+	battle_soul_aqua.moveable = Battle_GetState()==BATTLE_STATE.IN_TURN && collision_circle(x, y, radius, battle_bullet, false, true);
+}
 else {
 	var SPD = Player_GetSpdTotal();
 	var SPD = (Input_IsHeld(INPUT.CANCEL) ? SPD / 2 : SPD);

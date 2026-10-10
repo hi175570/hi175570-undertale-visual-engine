@@ -1,0 +1,46 @@
+# Local build output, packaged binaries and caches
+/.codex-build/
+/*.zip
+/*.yyz
+/*.exe
+/*.win
+/.cache/
+/.idea/
+/.vs/
+*.log
+*.bak
+*.tmp
+*.yyp.tmp
+*.yydebug
+__pycache__/
+Thumbs.db
+.DS_Store
+
+# Private battle saves and local machine settings
+save/
+_runtime/
+.env
+.env.*
+!.env.example
+*.local.json
+*.local.ini
+*.pfx
+*.p12
+*.jks
+*.keystore
+
+# Local planning/history and one-off personal-save repair scripts
+/docs/CURRENT_BATCH_STATE.md
+/docs/CODEX_ERROR_FIX_STATE.md
+/docs/BATTLE_EDITOR_REGRESSION.md
+/docs/REPOSITORY_PUBLISH_STATE.md
+/tools/migrate_dust_enemy_assets.ps1
+/tools/repair-dust-runtime.ps1
+/tools/Restore-MainBoardFromSave.ps1
+
+# Do not redistribute raw fonts with unverified redistribution permission.
+# Keep local copies; see docs/FONT_SETUP.md before building a fresh clone.
+/datafiles/editor_fonts/*.ttf
+/datafiles/editor_fonts/*.otf
+!/datafiles/editor_fonts/NotoEmoji-Regular.ttf
+!/datafiles/editor_fonts/NotoEmoji-VariableFont_wght.ttf

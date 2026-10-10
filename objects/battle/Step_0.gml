@@ -1,3 +1,18 @@
+// Text fields in the battle editor own the keyboard. Do not let the same Enter
+// press leak through into the battle menu underneath.
+if(instance_exists(battle_editor)){
+    var editor_instance=instance_find(battle_editor,0);
+    if(editor_instance.focus_field!=""||editor_instance.input_capture_frames>0) exit;
+}
+
+Battle_ShieldUpdate();
+Battle_SurvivalItemUpdate();
+BattleEditor_BattleEntryStep(id);
+if(_typed_hurt_cooldown>0) _typed_hurt_cooldown=max(0,_typed_hurt_cooldown-global.delta_time_factor);
+if(_true_knife_hurt_cooldown>0) _true_knife_hurt_cooldown=max(0,_true_knife_hurt_cooldown-global.delta_time_factor);
+if(_blue_hurt_cooldown>0) _blue_hurt_cooldown=max(0,_blue_hurt_cooldown-global.delta_time_factor);
+if(_orange_hurt_cooldown>0) _orange_hurt_cooldown=max(0,_orange_hurt_cooldown-global.delta_time_factor);
+
 if (_heal != 0) {
     Player_SetHp(round(_hp));
     Player_SetKr(round(_kr));
@@ -5,50 +20,22 @@ if (_heal != 0) {
 
 if (global.kr) {
     if (damage) {
-        // 1. 累加伤害计时器
-        hurt_timer += 1 * global.delta_time_factor;
-
-        while (hurt_timer >= 1) {
-            hurt_timer--;
-
-            // --- 处理受击逻辑 ---
-            if (Player_GetHp() > 1) {
-                // 正常扣血并增加 KR
-                Player_Hurt(1);
-                Player_SetKr(Player_GetKr() + 1);
-                if (Player_GetKr() > 5 && Player_GetHp() % 2) {
-                    Player_SetKr(Player_GetKr() - 1);
-                }
-                // 注意：这里不需要在受击瞬间去减掉 KR，KR 的自然衰减应该独立处理
-            } else {
-                // HP 已经是 1 了，开始扣除 KR
-                Player_SetKr(Player_GetKr() - 1);
-
-                // 检查死亡
-                if (Player_GetKr() <= 0) {
-                    var z = Storage_SetTempFlag(FLAG_TEMP_GAMEOVER_SOUL_X, battle_soul.x - camera.x);
-                    z.Set(FLAG_TEMP_GAMEOVER_SOUL_Y, battle_soul.y - camera.y);
-                    z.Set(FLAG_TEMP_GAMEOVER_SOUL_COLOR, battle_soul.image_blend);
-                    room_goto(room_gameover);
-                    break; // 死亡了就跳出循环
-                }
-            }
-            audio_play_sound(snd_hurt, 0, false);
-
-        }
-
+        // Legacy bullets set battle.damage as a contact flag. Route that flag
+        // through the same packet/cooldown path as editor-created attacks.
+        Player_HurtColor(0,2,false);
         damage = 0;
     }
-    // --- 独立的 KR 衰减逻辑 (通常放在 Step 事件的末尾) ---
-    // 这部分处理 KR 随时间慢慢变成 HP 损耗的过程
+    // AllScript waits exactly 0.25 seconds between each KR point. Keep this in
+    // seconds instead of frames so changing the GameMaker runner FPS does not
+    // silently change the damage model. Natural KR decay never kills by itself;
+    // only a later hit can consume the remaining endpoint.
     if (Player_GetKr() > 0) {
-        kr_timer += 1 * global.delta_time_factor;
-        while (kr_timer >= 25) { // 衰减速度
-            kr_timer -= 25;
-            Player_SetKr(Player_GetKr() - 1);
-
+        kr_timer += clamp(delta_time/1000000,0,0.1);
+        while (kr_timer >= 0.25 && Player_GetKr()>0) {
+            kr_timer -= 0.25;
+            Player_SetKr(max(0,Player_GetKr()-1));
         }
-    }
+    } else kr_timer=0;
 }
 
 //菜单
@@ -610,7 +597,11 @@ if (_state == BATTLE_STATE.IN_TURN) {
     if (_turn_time > 0) {
         _turn_time -= 1 * global.delta_time_factor;
     } else if (_turn_time == 0) {
-        Battle_EndTurn();
+        // An editor-authored turn can outlive the static countdown when a
+        // repeat/branch has spawned a still-running corridor or another
+        // deferred pattern. Its runtime owns the exact completion check and
+        // calls Battle_EndTurn after all live work has really finished.
+        if(!BattleEditor_RuntimeOwnsTurnEnd()) Battle_EndTurn();
     }
 }
 

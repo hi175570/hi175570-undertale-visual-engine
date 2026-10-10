@@ -4,6 +4,7 @@ _prefix="{instant true}{font 1}{space_x -0.5}";
 _inst_instruction=noone;
 _inst_begin=noone;
 _inst_settings=noone;
+_inst_exit=noone;
 _inst_name=noone;
 _inst_lv=noone;
 _inst_time=noone;
@@ -22,6 +23,9 @@ _inst_confirm_yes=noone;
 _inst_confirm_no=noone;
 
 _choice=0;
+_selector_x=136;
+_selector_y=128;
+_selector_target_y=128;
 _choice_naming=0;
 _choice_naming_letter=0;
 _choice_naming_command=0;
@@ -42,5 +46,10 @@ _naming_name="";
 _change_inst=noone;
 _change_color=c_white;
 _change_id=-1;
+
+// Optional attack-editor entrance. The room is looked up by name so removing
+// the whole Editor resource group never leaves a hard GameMaker asset link.
+_editor_hold_us=0;
+_editor_hold_triggered=false;
 
 event_user(0);

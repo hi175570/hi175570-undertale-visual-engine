@@ -1,3 +1,5 @@
+if(variable_instance_exists(id,"_battle_editor_runtime_frozen")&&_battle_editor_runtime_frozen) exit;
+
 if (!processed) {
     if (follow) {
         direction = 0;

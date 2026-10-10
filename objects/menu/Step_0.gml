@@ -1,66 +1,48 @@
+// The persistent start-menu room must never receive a confirm press while the
+// battle editor owns the screen (especially when Enter finishes text input).
+if(instance_exists(battle_editor)) exit;
+
 if (_menu == 0) {
-    if (_mode == 0) {
-        if (Input_IsPressed(INPUT.DOWN)) {
-            if (_choice < 1) {
-                _choice = 1;
-                event_user(2);
+    var _editor_room=asset_get_index("room_battle_editor");
+    if(_editor_room>=0){
+        if(keyboard_check(ord("E"))){
+            _editor_hold_us+=delta_time;
+            if(!_editor_hold_triggered&&_editor_hold_us>=1000000){
+                _editor_hold_triggered=true;
+                Storage_GetTempGeneral().Set(FLAG_TEMP_ENCOUNTER,0);
+                Storage_GetTempGeneral().Set(FLAG_TEMP_BATTLE_ROOM_RETURN,room);
+                room_persistent=true;
+				display_set_gui_size(640,480);
+				if(surface_exists(application_surface)) surface_resize(application_surface,640,480);
+                room_goto(_editor_room);
+                exit;
             }
-        } else if (Input_IsPressed(INPUT.UP)) {
-            if (_choice > 0) {
-                _choice = 0;
-                event_user(2);
-            }
-        } else if (Input_IsPressed(INPUT.CONFIRM)) {
-            if (_choice == 0) {
-                _menu = 1;
-                event_user(0);
-            } else {
-                room_goto(room_settings);
-            }
+        }else{
+            _editor_hold_us=0;
+            _editor_hold_triggered=false;
         }
-    } else {
-        if (Input_IsPressed(INPUT.LEFT)) {
-            if (_choice == 1) {
-                _choice = 0;
-                event_user(2);
-            }
-        } else if (Input_IsPressed(INPUT.RIGHT)) {
-            if (_choice == 0) {
-                _choice = 1;
-                event_user(2);
-            }
-        } else if (Input_IsPressed(INPUT.DOWN)) {
-            if (_choice != 2) {
-                _choice = 2;
-                event_user(2);
-            }
-        } else if (Input_IsPressed(INPUT.UP)) {
-            if (_choice == 2) {
-                _choice = 0;
-                event_user(2);
-            }
-        } else if (Input_IsPressed(INPUT.CONFIRM)) {
-            if (_choice == 0) {
-                Storage_LoadGame();
-                var roomName = Storage_GetStaticGeneral().Get(FLAG_STATIC_ROOM, "");
-                var roomIndex = asset_get_index(roomName);
-                if (!room_exists(roomIndex)) {
-                    roomIndex = -1;
-                }
-                if (room_exists(roomIndex)) {
-                    room_goto(roomIndex);
-                } else {
-                    show_message($"ERROR:\nAttempt to goto an unexisting room {roomName}");
-                }
-            } else if (_choice == 1) {
-                _menu = 2;
-                var z = Storage_GetInfoGeneral();
-                _naming_name = z.Get(FLAG_INFO_NAME, "???");
-                _confirm_title = "A name has already&been chosen.";
-                event_user(0);
-            } else if (_choice == 2) {
-                room_goto(room_settings);
-            }
+    }
+    _selector_y=lerp(_selector_y,_selector_target_y,0.28);
+    if(abs(_selector_y-_selector_target_y)<0.1) _selector_y=_selector_target_y;
+    if (Input_IsPressed(INPUT.DOWN)) {
+        _choice=min(_choice+1,2);
+        event_user(2);
+    } else if (Input_IsPressed(INPUT.UP)) {
+        _choice=max(_choice-1,0);
+        event_user(2);
+    } else if (Input_IsPressed(INPUT.CONFIRM)) {
+        if (_choice == 0) {
+            Storage_GetStatic().ClearData();
+            var sDynamic=Storage_GetDynamic();
+            sDynamic.ClearData();
+            sDynamic.LoadFromFile();
+            Player_CustomInitialData();
+            Player_SetName("hi175570");
+            Encounter_Start(0,true,false);
+        } else if (_choice == 1) {
+            room_goto(room_settings);
+        } else {
+            game_end();
         }
     }
 } else if (_menu == 1) {

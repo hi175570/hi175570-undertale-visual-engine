@@ -1,5 +1,9 @@
 // text_typer args
 text = "";
+// Normalize only when a caller replaces the source. This gives every typer
+// (battle dialogue, enemy bubbles, placed typewriters and game-over text) the
+// same supplementary-Unicode path without rescanning stable text each frame.
+_unicode_source_seen = "";
 _line = 0; //目前所在行�?
 _type_dir = 0; //打字方向 0为水�?1为垂�?
 _halign = 0;
@@ -80,6 +84,10 @@ _angle_follow = true;
 _effect_shook = 0;
 // group init
 event_user(5);
+// Every typer owns the same complete font-group table. Previously only the
+// game-over caller filled editor-added groups, so ordinary dialogue/typewriter
+// rendering depended on which code path created the instance.
+TextTyper_FontApplyGroups(id);
 _surface_target = noone;
 width = 0;
 height = 0;
@@ -112,7 +120,8 @@ function CharUpdate(character) {
 function ChangeText(text) {
     event_user(3);
 
-    id.text = text;
+    id.text = TextTyper_NormalizeSupplementaryUnicode(text);
+    _unicode_source_seen = id.text;
     _speed = 0;
     _char_per_frame = 1;
     _voice = 0;
@@ -196,6 +205,7 @@ function ChangeText(text) {
     _surface_target = noone;
 
     event_user(5);
+    TextTyper_FontApplyGroups(id);
 
     width = 0;
     height = 0;

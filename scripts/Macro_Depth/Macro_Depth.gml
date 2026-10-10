@@ -15,8 +15,11 @@ function Macro_Depth() {
 		BOARD=-600,
 		UI_HIGH=-700,
 		BULLET_OUTSIDE_LOW=-800,
-		SOUL=-900,
-		BULLET_OUTSIDE_HIGH=-1000
+		BULLET_OUTSIDE_HIGH=-1000,
+		SOUL=-1100,
+		// Major attacks cover the player; warnings cover absolutely everything.
+		BEAM=-1200,
+		WARNING=-1300
 	};
 
 

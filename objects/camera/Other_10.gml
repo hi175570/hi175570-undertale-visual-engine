@@ -7,6 +7,11 @@ scale_x=1;
 scale_y=1;
 angle=0;
 target=noone;
+// Battle-editor screen actions address the camera by visual center. Keeping
+// this separate from x/y preserves the engine's original top-left API.
+editor_center_enabled=false;
+editor_center_x=width*0.5;
+editor_center_y=height*0.5;
 
 shake_x=0;
 shake_y=0;

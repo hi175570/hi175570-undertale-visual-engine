@@ -3,4 +3,6 @@ y=Storage_GetTempFlag(FLAG_TEMP_GAMEOVER_SOUL_Y);
 image_blend=Storage_GetTempFlag(FLAG_TEMP_GAMEOVER_SOUL_COLOR);
 audio_stop_all();
 time=0;
+a=noone;
+revive_requested=false;
 alarm[0]=40/global.delta_time_factor;

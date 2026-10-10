@@ -1,4 +1,3 @@
 function Player_HurtKr() {
-    if (global.kr) battle.damage = 1;
-    return;
+    return Player_HurtColor(0,2,false);
 }

@@ -1,3 +1,8 @@
+if(_unicode_source_seen!=text){
+    text=TextTyper_NormalizeSupplementaryUnicode(text);
+    _unicode_source_seen=text;
+}
+
 _voice_played = false;
 event_user(4);
 

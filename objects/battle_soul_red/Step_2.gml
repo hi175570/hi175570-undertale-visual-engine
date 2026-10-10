@@ -1,13 +1,5 @@
 event_inherited();
 
-if(Battle_GetState()==BATTLE_STATE.IN_TURN && moveable){
-	if(xprevious = x&&yprevious = y){
-		global.moving = 0;
-	}
-	else{
-		global.moving = 1;
-	}
-}
-else{
-	global.moving = 0;
-}
+global.moving = Battle_GetState() == BATTLE_STATE.IN_TURN && moveable
+    && (Input_IsHeld(INPUT.UP) || Input_IsHeld(INPUT.DOWN)
+        || Input_IsHeld(INPUT.LEFT) || Input_IsHeld(INPUT.RIGHT));

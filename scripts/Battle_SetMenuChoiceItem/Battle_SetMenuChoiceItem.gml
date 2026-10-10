@@ -12,8 +12,12 @@ function Battle_SetMenuChoiceItem(slot, call = true) {
 
         //更新文字
         var text = global.classic_ui ? "": "{depth " + string(DEPTH_BATTLE.BULLET) + "}{show_item true}";;
-        var proc = battle._menu_choice_item_first;
-        repeat(min(global.classic_ui ? 3 : 8, count)) {
+        var proc = 0;
+        // Create every inventory label (the inventory itself is capped at
+        // 114). The battle-board clip reveals only the visible rows while the
+        // typer moves, so truncating this text to eight made item 9 selectable
+        // but permanently nameless.
+        repeat(count) {
             text += "* " + items.GetItemName(proc) + "&";
             proc += 1;
         }

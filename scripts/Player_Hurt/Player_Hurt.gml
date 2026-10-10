@@ -5,6 +5,7 @@ function Player_Hurt(damage) {
 	if(damage>0){
 		var hp=max(0,Player_GetHp()-damage);
 		Player_SetHp(hp);
+		BattleEditor_NotifyPlayerHurt(damage);
 	}
 	return true;
 }

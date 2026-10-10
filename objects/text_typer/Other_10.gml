@@ -6,10 +6,13 @@ if(ord(_char) < 128){
     font = 1;
 }
 
-draw_set_font(_group_font[_font, font]);
+var preferred_font=_group_font[_font, font];
+var resolved_font=TextTyper_FontResolve(preferred_font,_char);
+draw_set_font(resolved_font);
+var color_emoji=TextTyper_ColorEmojiIndex(_char)>=0;
 
 // 计算宽度
-var wid_char = sprite_exists(_char_sprite) ? sprite_get_width(_char_sprite) : string_width(_char);
+var wid_char = sprite_exists(_char_sprite) ? sprite_get_width(_char_sprite) : (color_emoji?TextTyper_ColorEmojiSize(preferred_font):string_width(_char));
 var wid_space = _group_font_space_x[_font, font] + _space_x;
 var scale_x = _group_font_scale_x[_font, font] * _scale_x;
 var scale_y = _group_font_scale_y[_font, font] * _scale_y;
@@ -35,7 +38,8 @@ if(_char != " " && _char != "　"){
     // 构造字符数据 Struct (包含数组引用)
     var char_data = {
         text: _char,
-        font: _group_font[_font, font],
+        font: resolved_font,
+        color_emoji: color_emoji,
         scale_x: scale_x,
         scale_y: scale_y,
         angle: _angle,
@@ -101,7 +105,7 @@ if(_char != " " && _char != "　"){
         
         if(audio_exists(sound)){
             if(_audio_clear == 1) audio_stop_sound(sound);
-            audio_play_sound(sound, 0, false);
+            BattleEditor_RuntimePlaySound(sound, 0, false);
             _voice_played = true;
         }
     }

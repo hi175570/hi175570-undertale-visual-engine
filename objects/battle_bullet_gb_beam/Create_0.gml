@@ -1,5 +1,16 @@
 event_inherited();
-depth = DEPTH_BATTLE.BULLET_OUTSIDE_HIGH;
+depth = DEPTH_BATTLE.BEAM;
 out = 1;
 hurtable = 0;
 auto_destroy = 0;
+visual_min_width=16;
+visual_max_width=16;
+hit_width=12;
+editor_visual_override=false;
+editor_visual_color=c_white;
+editor_gb_beam_custom=false;
+editor_gb_beam_source_direction=0;
+editor_gb_beam_frame_interval=2;
+editor_gb_beam_age=0;
+editor_gb_beam_uses_own_color=false;
+editor_gb_guarantee_core=false;

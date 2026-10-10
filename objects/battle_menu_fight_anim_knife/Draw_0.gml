@@ -1,0 +1,9 @@
+if(out==0){
+    depth=DEPTH_BATTLE.BULLET;
+    surface_set_target(Battle_GetBoardSurface());
+    draw_self();
+    surface_reset_target();
+}else{
+    depth=out==2?DEPTH_BATTLE.BULLET:DEPTH_BATTLE.BEAM;
+    draw_self();
+}

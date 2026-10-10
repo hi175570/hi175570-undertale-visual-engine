@@ -20,9 +20,8 @@ if(_input_acceptable){
 			damage*=(1-DISTANCE/WIDTH)*2;
 		}
 		damage=round(damage);
-		if(damage<=0){
-			damage=1;
-		}
+		// Zero or negative calculated damage is a genuine MISS.
+		if(damage<=0) damage=0;
 		
 		Battle_SetMenuFightDamage(damage);
 		Battle_SetMenuFightAnimTime(50);

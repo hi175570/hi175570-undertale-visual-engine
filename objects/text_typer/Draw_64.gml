@@ -8,9 +8,14 @@ if (!_gui && _choice != -1) {
 
 // 2. 遍历所有字符数据
 var list_size = array_length(_char_data_list);
+var active_surface = -1;
+var active_surface_set = false;
 for (var i = 0; i < list_size; i++) {
     var char_data = _char_data_list[i];
     if (!char_data.gui) continue;
+    if ((!struct_exists(char_data,"color_emoji")||!char_data.color_emoji) && font_exists(char_data.font) && string_length(char_data.text) > 0) {
+        char_data.font = TextTyper_FontResolve(char_data.font, char_data.text);
+    }
     // --- 准备绘制坐标 ---
     var _base_x = x + char_data._xUnit[0] * char_data._deltaX + char_data._yUnit[0] * char_data._deltaY;
     var _base_y = y + char_data._xUnit[1] * char_data._deltaX + char_data._yUnit[1] * char_data._deltaY;
@@ -84,12 +89,26 @@ for (var i = 0; i < list_size; i++) {
     }
     // --- 设置目标 Surface ---
     var has_surface = surface_exists(char_data.surface_target);
-    if (has_surface) surface_set_target(char_data.surface_target);
+    if(has_surface){
+        if(!active_surface_set||active_surface!=char_data.surface_target){
+            if(active_surface_set) surface_reset_target();
+            surface_set_target(char_data.surface_target);
+            active_surface=char_data.surface_target;
+            active_surface_set=true;
+        }
+    }else if(active_surface_set){
+        surface_reset_target();
+        active_surface=-1;
+        active_surface_set=false;
+    }
 
     draw_set_halign(char_data.halign);
     draw_set_valign(char_data.valign);
 
-    if (char_data.effect != 1) {
+    var draw_color_emoji=struct_exists(char_data,"color_emoji")&&char_data.color_emoji;
+    if(draw_color_emoji){
+        TextTyper_DrawColorEmojiTransformed(_base_x+char_data._offset_x[0],_base_y+char_data._offset_y[0],char_data.text,char_data.scale_x,char_data.scale_y,char_data.angle,char_data.alpha_text*char_data.alpha,char_data.font);
+    }else if (char_data.effect != 1) {
         // 普通模式绘制 (文字 + 阴影 + 描边)
         if (font_exists(char_data.font)) {
             draw_set_font(char_data.font);
@@ -176,5 +195,5 @@ for (var i = 0; i < list_size; i++) {
 
     }
 
-    if (has_surface) surface_reset_target();
 }
+if(active_surface_set) surface_reset_target();

@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"TextTyper_Markup",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"TextTyper_Markup",
+  "parent":{
+    "name":"Scripts",
+    "path":"folders/Scripts.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

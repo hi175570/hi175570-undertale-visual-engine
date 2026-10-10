@@ -12,9 +12,9 @@ function Item_GetTextHeal() {
 	result+="{define `HP` "+string(HEAL)+"}";
 
 	if(Player_GetHp()>=Player_GetHpMax()){
-		result+="* Your HP was maxed out.";
+		result+="* HP 已经全满。";
 	}else{
-		result+="* You recovered {insert HP} HP!";
+		result+="* 恢复了 {insert HP} HP！";
 	}
 
 	return result;

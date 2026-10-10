@@ -8,6 +8,10 @@ if(_flash<3){
 }else{
 	_draw_player=false;
 	_draw_soul=true;
+	if(!instance_exists(char_player)){
+		alarm[3]=10/global.delta_time_factor;
+		exit;
+	}
 	var duration=15*(!_quick ? 2 : 1);
 	Anim_Create(id,"_draw_soul_x",0,0,_draw_soul_x,_soul_x-_draw_soul_x,duration);
 	Anim_Create(id,"_draw_soul_y",0,0,_draw_soul_y,_soul_y-_draw_soul_y,duration);

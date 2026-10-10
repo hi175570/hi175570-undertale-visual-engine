@@ -1,7 +1,11 @@
 if (Battle_GetMenu() != BATTLE_MENU.ITEM) {
     instance_destroy();
 }
-NUMBER = Item_GetNumber();
+NUMBER = max(0,Item_GetNumber());
+if(array_length(yy)!=NUMBER){
+    array_resize(yy,NUMBER);
+    for(var item_dot=0;item_dot<NUMBER;item_dot++) yy[item_dot]=y-10*floor(NUMBER/2)+10*item_dot;
+}
 var P = Battle_GetMenuChoiceItem();
 if (!global.classic_ui) Anim_Create(id, "yd", ANIM_TWEEN.CUBIC, ANIM_EASE.OUT, yd, y - 10 * floor(NUMBER / 2) + 10 * P - yd, 15);
 else yd = y - 10 * floor(NUMBER / 2) + 10 * P;

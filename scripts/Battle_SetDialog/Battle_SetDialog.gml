@@ -24,6 +24,13 @@ function Battle_SetDialog() {
 		//创建实例
 		var tx=battle_board.x-battle_board.left-5+28;
 		var ty=battle_board.y-battle_board.up-5+20;
+		// Editor round text uses fixed battle-screen coordinates; moving the
+		// monster-turn board must not drag this menu sentence with it.
+		if(variable_global_exists("battle_editor_project_runtime")&&!CHOICE&&!LINE2){
+			var editor_init=global.battle_editor_project_runtime.initialization;
+			if(struct_exists(editor_init,"turn_text_x")) tx=editor_init.turn_text_x;
+			if(struct_exists(editor_init,"turn_text_y")) ty=editor_init.turn_text_y;
+		}
 		if(CHOICE){
 			tx+=40
 		}

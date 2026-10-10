@@ -309,6 +309,7 @@ case "voice_single":
 
 case "font":
     if (is_real(cmd[ 1])) {
+        TextTyper_FontEnsureGroup(id,cmd[1]);
         if (cmd[ 1] >= 0 && cmd[ 1] < array_height_2d(_group_font)) {
             _font = cmd[ 1];
         }
@@ -510,7 +511,7 @@ case "sound":
         target = asset_get_index(cmd[ 1]);
     }
     if (audio_exists(target)) {
-        audio_play_sound(target, 0, false);
+        BattleEditor_RuntimePlaySound(target, 0, false);
     }
     break;
 

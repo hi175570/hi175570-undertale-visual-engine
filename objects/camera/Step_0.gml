@@ -54,6 +54,11 @@ if(shake_y>0){
 }
 
 
+if(editor_center_enabled&&!instance_exists(target)){
+	x=editor_center_x-width/max(0.01,scale_x)*0.5;
+	y=editor_center_y-height/max(0.01,scale_y)*0.5;
+}
+
 if(!instance_exists(target)){
 	camera_set_view_target(_camera,noone);
 	camera_set_view_pos(_camera,x+_shake_pos_x,y+_shake_pos_y);

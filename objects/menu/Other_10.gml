@@ -2,52 +2,21 @@
 if (_menu == 0) {
     var s = Storage_GetInfo();
     _mode = s.IsFileExists();
-    if (!_mode) {
-        _inst_instruction = instance_create_depth(85, 20, 0, text_typer);
-        _inst_instruction.text = _prefix + "{color_text `gray_light`} --- Instruction ---{space_y -1}&&{space_y 2}[Z or ENTER] - Confirm&[X or SHIFT] - Cancel&[C or CTRL] - Menu (In-game)&[F4] - Fullscreen&[Hold ESC] - Quit&When HP is 0, you lose.";
-        _inst_begin = instance_create_depth(85, 172, 0, text_typer);
-        _inst_begin.text = _prefix + "{color `white`}Begin Game";
-        _inst_settings = instance_create_depth(85, 192, 0, text_typer);
-        _inst_settings.text = _prefix + "{color `white`}Settings";
-        with(text_typer) {
-            event_user(15);
-        }
-        event_user(2);
-    } else {
-        s.ClearData();
-        s.LoadFromFile();
-        var z = Storage_GetInfoGeneral();
-        _inst_name = instance_create_depth(70, 62, 0, text_typer);
-        _inst_name.text = _prefix + z.Get(FLAG_INFO_NAME, "EMPTY");
-        _inst_lv = instance_create_depth(154, 62, 0, text_typer);
-        _inst_lv.text = _prefix + $"LV {z.Get(FLAG_INFO_LV,0)}";
-        _inst_time = instance_create_depth(226, 62, 0, text_typer);
-        var time_in_steps = z.Get(FLAG_INFO_TIME, 0);
-        var time_in_seconds = time_in_steps / GAME_FPS;
-        var minute = floor(time_in_seconds / 60);
-        var second = floor(time_in_seconds mod 60);
-        _inst_time.text = _prefix + $"{minute}:{second<10 ? "0 " : ""}{second}";
-        _inst_room = instance_create_depth(70, 80, 0, text_typer);
-        var roomIndex = asset_get_index(z.Get(FLAG_INFO_ROOM, ""));
-        if (!room_exists(roomIndex)) {
-            roomIndex = -1;
-        }
-        _inst_room.text = _prefix + Player_GetRoomName(roomIndex);
-        _inst_continue = instance_create_depth(85, 105, 0, text_typer);
-        _inst_continue.text = _prefix + "{color `white`}Continue";
-        _inst_continue.override_color_text_enabled = true;
-        _inst_reset = instance_create_depth(195, 105, 0, text_typer);
-        _inst_reset.text = _prefix + "{color `white`}Reset";
-        _inst_reset.override_color_text_enabled = true;
-        _inst_settings = instance_create_depth(132, 125, 0, text_typer);
-        _inst_settings.text = _prefix + "{color `white`}Settings";
-        _inst_settings.override_color_text_enabled = true;
-        event_user(2);
-    }
+    _inst_begin = instance_create_depth(144, 120, 0, text_typer);
+    // The initial selection is Start, so it must already be yellow before the
+    // first input event rebuilds the menu colors.
+    _inst_begin.text = _prefix + "{font 0}{color `yellow`}开始";
+    _inst_settings = instance_create_depth(144, 150, 0, text_typer);
+    _inst_settings.text = _prefix + "{font 0}{color `white`}设置";
+    _inst_exit = instance_create_depth(144, 180, 0, text_typer);
+    _inst_exit.text = _prefix + "{font 0}{color `white`}退出";
+    with(text_typer) event_user(15);
+    event_user(2);
 } else {
     if (instance_exists(_inst_instruction)) instance_destroy(_inst_instruction);
     if (instance_exists(_inst_begin)) instance_destroy(_inst_begin);
     if (instance_exists(_inst_settings)) instance_destroy(_inst_settings);
+    if (instance_exists(_inst_exit)) instance_destroy(_inst_exit);
     if (instance_exists(_inst_name)) instance_destroy(_inst_name);
     if (instance_exists(_inst_lv)) instance_destroy(_inst_lv);
     if (instance_exists(_inst_time)) instance_destroy(_inst_time);

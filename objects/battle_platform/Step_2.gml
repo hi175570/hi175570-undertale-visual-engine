@@ -34,7 +34,7 @@ if (bounce) {
     }
 
     if (isInside[1][0]) {
-        var nearestPos, nearestDis = -1; // 最近位置和最近距离
+        var nearestPos=undefined, nearestDis = -1; // 最近位置和最近距离
         for (var i = limit_index[0]; i < boardcount; i++) { // 遍历所有框
             // 得到限制位置和距离
             if (global.boards_array[i].cover && !global.boards_array[i].isCollide[0]) continue;
@@ -46,14 +46,16 @@ if (bounce) {
             }
 
         }
-        platform_position[0] = nearestPos[0] + offset_pos[0][0];
-        platform_position[1] = nearestPos[1] + offset_pos[0][1];
-        distance = nearestDis;
-        bounced = true;
+        if(is_array(nearestPos)){
+            platform_position[0] = nearestPos[0] + offset_pos[0][0];
+            platform_position[1] = nearestPos[1] + offset_pos[0][1];
+            distance = nearestDis;
+            bounced = true;
+        }
     }
 
     if (isInside[1][1]) {
-        var nearestPos, nearestDis = -1; // 最近位置和最近距离
+        var nearestPos=undefined, nearestDis = -1; // 最近位置和最近距离
         for (var i = limit_index[1]; i < boardcount; i++) { // 遍历所有框
             // 得到限制位置和距离
             if (global.boards_array[i].cover && !global.boards_array[i].isCollide[1]) continue;
@@ -65,16 +67,16 @@ if (bounce) {
                 nearestDis = dis;
             }
         }
-        if (distance < nearestDis) {
+        if (is_array(nearestPos)&&distance < nearestDis) {
             distance = nearestDis;
             platform_position[0] = nearestPos[0] - offset_pos[0][0];
             platform_position[1] = nearestPos[1] - offset_pos[0][1];
         }
-        bounced = true;
+        if(is_array(nearestPos)) bounced = true;
     }
 
     if (isInside[1][2]) {
-        var nearestPos, nearestDis = -1; // 最近位置和最近距离
+        var nearestPos=undefined, nearestDis = -1; // 最近位置和最近距离
         for (var i = limit_index[2]; i < boardcount; i++) { // 遍历所有框
             // 得到限制位置和距离
             if (global.boards_array[i].cover && !global.boards_array[i].isCollide[2]) continue;
@@ -86,17 +88,17 @@ if (bounce) {
                 nearestDis = dis;
             }
         }
-        if (distance < nearestDis) {
+        if (is_array(nearestPos)&&distance < nearestDis) {
             distance = nearestDis;
             platform_position[0] = nearestPos[0] + offset_pos[1][0];
             platform_position[1] = nearestPos[1] + offset_pos[1][1];
             distance = nearestDis;
         }
-        bounced = true;
+        if(is_array(nearestPos)) bounced = true;
     }
 
     if (isInside[1][3]) {
-        var nearestPos, nearestDis = -1; // 最近位置和最近距离
+        var nearestPos=undefined, nearestDis = -1; // 最近位置和最近距离
         for (var i = limit_index[3]; i < boardcount; i++) { // 遍历所有框
             // 得到限制位置和距离
             if (global.boards_array[i].cover && !global.boards_array[i].isCollide[3]) continue;
@@ -108,18 +110,18 @@ if (bounce) {
                 nearestDis = dis;
             }
         }
-        if (distance < nearestDis) {
+        if (is_array(nearestPos)&&distance < nearestDis) {
             distance = nearestDis;
             platform_position[0] = nearestPos[0] - offset_pos[1][0];
             platform_position[1] = nearestPos[1] - offset_pos[1][1];
         }
-        bounced = true;
+        if(is_array(nearestPos)) bounced = true;
     }
     x = platform_position[0];
     y = platform_position[1];
     distance = -1;
     if (!isInside[0][0]) {
-        var nearestPos, nearestDis = -1; // 最近位置和最近距离
+        var nearestPos=undefined, nearestDis = -1; // 最近位置和最近距离
         for (var i = 0; i < boardcount; i++) { // 遍历所有框
             // 得到限制位置和距离
             if (!global.boards_array[i].cover) {
@@ -132,14 +134,16 @@ if (bounce) {
                 }
             }
         }
-        platform_position[0] = nearestPos[0] + offset_pos[0][0];
-        platform_position[1] = nearestPos[1] + offset_pos[0][1];
-        distance = nearestDis;
-        bounced = true;
+        if(is_array(nearestPos)){
+            platform_position[0] = nearestPos[0] + offset_pos[0][0];
+            platform_position[1] = nearestPos[1] + offset_pos[0][1];
+            distance = nearestDis;
+            bounced = true;
+        }
     }
 
     if (!isInside[0][1]) {
-        var nearestPos, nearestDis = -1; // 最近位置和最近距离
+        var nearestPos=undefined, nearestDis = -1; // 最近位置和最近距离
         for (var i = 0; i < boardcount; i++) { // 遍历所有框
             // 得到限制位置和距离
             if (!global.boards_array[i].cover) {
@@ -152,17 +156,17 @@ if (bounce) {
                 }
             }
         }
-        if (distance < nearestDis) {
+        if (is_array(nearestPos)&&distance < nearestDis) {
             distance = nearestDis;
             platform_position[0] = nearestPos[0] - offset_pos[0][0];
             platform_position[1] = nearestPos[1] - offset_pos[0][1];
         }
-        bounced = true;
+        if(is_array(nearestPos)) bounced = true;
 
     }
 
     if (!isInside[0][2]) {
-        var nearestPos, nearestDis = -1; // 最近位置和最近距离
+        var nearestPos=undefined, nearestDis = -1; // 最近位置和最近距离
         for (var i = 0; i < boardcount; i++) { // 遍历所有框
             // 得到限制位置和距离
             if (!global.boards_array[i].cover) {
@@ -175,17 +179,17 @@ if (bounce) {
                 }
             }
         }
-        if (distance < nearestDis) {
+        if (is_array(nearestPos)&&distance < nearestDis) {
             distance = nearestDis;
             platform_position[0] = nearestPos[0] + offset_pos[1][0];
             platform_position[1] = nearestPos[1] + offset_pos[1][1];
             distance = nearestDis;
         }
-        bounced = true;
+        if(is_array(nearestPos)) bounced = true;
     }
 
     if (!isInside[0][3]) {
-        var nearestPos, nearestDis = -1; // 最近位置和最近距离
+        var nearestPos=undefined, nearestDis = -1; // 最近位置和最近距离
         for (var i = 0; i < boardcount; i++) { // 遍历所有框
             // 得到限制位置和距离
             if (!global.boards_array[i].cover) {
@@ -198,12 +202,12 @@ if (bounce) {
                 }
             }
         }
-        if (distance < nearestDis) {
+        if (is_array(nearestPos)&&distance < nearestDis) {
             distance = nearestDis;
             platform_position[0] = nearestPos[0] - offset_pos[1][0];
             platform_position[1] = nearestPos[1] - offset_pos[1][1];
         }
-        bounced = true;
+        if(is_array(nearestPos)) bounced = true;
     }
     x = platform_position[0];
     y = platform_position[1];

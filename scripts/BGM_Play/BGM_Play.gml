@@ -24,6 +24,8 @@ function BGM_Play() {
 		global._bgm_id[SLOT]=audio_play_sound(AUDIO,1,LOOP);
 		global._bgm_loop_start[SLOT]=LOOP_START;
 		global._bgm_loop_end[SLOT]=LOOP_END;
+		global._bgm_frame_sync[SLOT]=false;
+		global._bgm_frame_clock[SLOT]=0;
 		return true;
 	}else{
 		return false;

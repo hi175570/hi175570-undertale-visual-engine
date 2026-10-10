@@ -6,6 +6,9 @@ function Battle_End() {
 	}
 	
 	fader.alpha=1;
+	BattleEditor_EffectsReset();
+	display_set_gui_size(640,480);
+	if(surface_exists(application_surface)) surface_resize(application_surface,640,480);
 	room_goto(room_return);
 	Fader_Fade(-1,0,20);
 	BGM_Resume(0);

@@ -4,9 +4,9 @@ if(_icon_show_tick<=45){
 draw_set_font(font_dotumche);
 draw_set_halign(fa_center);
 draw_set_color(c_red);
-draw_text(320,100,"/");
+TextTyper_DrawFallback(320,100,"/");
 draw_set_halign(fa_right);
-draw_text(320-5,100,string(_frame_current));
+TextTyper_DrawFallback(320-5,100,string(_frame_current));
 draw_set_halign(fa_left);
-draw_text(320+5,100,string(_frame_number));
-draw_text(5,5,string(_fps));
+TextTyper_DrawFallback(320+5,100,string(_frame_number));
+TextTyper_DrawFallback(5,5,string(_fps));

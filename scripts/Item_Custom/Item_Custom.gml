@@ -1,3 +1,20 @@
+#macro ITEM_INVENTORY_CAPACITY 114
+
+function CustomItem_TestFood(item_name, heal_amount) : ItemTypeSimple(item_name, "* 测试用食物。") constructor {
+	_heal_amount = heal_amount;
+	function OnUse(inventory,index){
+		var result = Player_HealWithMaxHpRecovery(_heal_amount,0.25,1);
+		var text = "* 你吃掉了" + _name + "。&* 恢复了 " + string(result.healed) + " HP。";
+		if(result.max_restored > 0){
+			text += "&* 最大 HP 恢复了 " + string(result.max_restored) + " 点。";
+		}
+		Dialog_Add(text);
+		Dialog_Start();
+		audio_play_sound(snd_item_heal,0,false);
+		inventory.Remove(index);
+	}
+}
+
 function Item_Custom(){
 	{
 		// Register item types here.
@@ -22,6 +39,16 @@ function Item_Custom(){
 		// See CustomItem_Bandage for healing item example.
 		#macro ITEM_BANDAGE "bandage"
 		itemTypes.Register(ITEM_BANDAGE, new CustomItem_Bandage());
+
+		// Consumable foods used by the mechanism-test encounter.
+		#macro ITEM_TEST_CANDY "test_candy"
+		#macro ITEM_TEST_NOODLES "test_noodles"
+		#macro ITEM_TEST_STEAK "test_steak"
+		#macro ITEM_TEST_PIE "test_pie"
+		itemTypes.Register(ITEM_TEST_CANDY, new CustomItem_TestFood("怪物糖果",20));
+		itemTypes.Register(ITEM_TEST_NOODLES, new CustomItem_TestFood("方便面",40));
+		itemTypes.Register(ITEM_TEST_STEAK, new CustomItem_TestFood("英雄料理",80));
+		itemTypes.Register(ITEM_TEST_PIE, new CustomItem_TestFood("奶油派",128));
 		
 		// See CustomItem_ToyKnife for help of equippable weapon.
 		#macro ITEM_TOY_KNIFE "toy_knife"
@@ -47,7 +74,7 @@ function Item_Custom(){
 		// After registering inventories, It's recommended to
 		// create a function to quickly get these inventories.
 		// See Inventory_GetFor___() below.
-		inventories.Register("items",new Inventory(itemTypes,8));
+		inventories.Register("items",new Inventory(itemTypes,ITEM_INVENTORY_CAPACITY));
 		inventories.Register("phones",new Inventory(itemTypes,8));
 		inventories.Register("box1",new Inventory(itemTypes,10));
 		inventories.Register("box2",new Inventory(itemTypes,10));

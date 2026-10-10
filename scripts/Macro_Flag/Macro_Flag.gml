@@ -2,6 +2,7 @@
 #macro FLAG_STATIC_NAME "name"
 #macro FLAG_STATIC_LV "lv"
 #macro FLAG_STATIC_HP_MAX "hp_max"
+#macro FLAG_STATIC_HP_MAX_NATURAL "hp_max_natural"
 #macro FLAG_STATIC_HP "hp"
 #macro FLAG_STATIC_ATK "atk"
 #macro FLAG_STATIC_ATK_ITEM "atk_item"
@@ -38,6 +39,12 @@
 
 #region settings
 #macro FLAG_SETTINGS_LANGUAGE "language"
+#macro FLAG_SETTINGS_DEBUG "debug_mode"
+#macro FLAG_SETTINGS_EASY "easy_mode"
+#macro FLAG_SETTINGS_EFFECTS "effects"
+#macro FLAG_SETTINGS_ADVANCED_EFFECTS "advanced_effects"
+#macro FLAG_SETTINGS_SHOW_FPS "show_fps"
+#macro FLAG_SETTINGS_MYSTERY "mystery_option"
 #endregion
 
 

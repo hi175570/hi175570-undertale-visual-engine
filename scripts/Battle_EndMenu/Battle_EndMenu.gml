@@ -25,8 +25,9 @@ function Battle_EndMenu() {
 		//计算逃跑
 		if(BUTTON==BATTLE_MENU_CHOICE_BUTTON.MERCY && MERCY==BATTLE_MENU_CHOICE_MERCY.FLEE){
 			if(Battle_IsMenuMercyFleeEnabled()){
-				var value=irandom(100)+10*Battle_GetTurnNumber();
-				Battle_SetFleeable(round(value/100));
+				// The editor exposes whether FLEE exists, not a hidden success roll.
+				// Once the player selects an enabled FLEE entry it always succeeds.
+				Battle_SetFleeable(true);
 			}else{
 				Battle_SetFleeable(false);
 			}
@@ -34,6 +35,17 @@ function Battle_EndMenu() {
 	
 		//调用事件
 		Battle_CallEnemyEvent(BATTLE_ENEMY_EVENT.MENU_END);
+
+		// MERCY keeps the original enemy event as the authority for whether an
+		// enemy is actually spared. This optional text is only the authored game
+		// response; it does not create a second spare/flee ruleset.
+		if(BUTTON==BATTLE_MENU_CHOICE_BUTTON.MERCY && MERCY==BATTLE_MENU_CHOICE_MERCY.SPARE){
+			var spare_response=string(BattleEditor_RuntimeMercyValue("mercy_spare_response",""));
+			if(string_length(string_trim(spare_response))>0){
+				Dialog_Add(TextTyper_CompileMarkup(spare_response).text);
+				Dialog_Start();
+			}
+		}
 	
 		if(Battle_GetEnemyNumber()>0){
 			//逃跑
@@ -44,23 +56,28 @@ function Battle_EndMenu() {
 			
 				var EXP=Battle_GetRewardExp();
 				var GOLD=Battle_GetRewardGold();
+				var custom_flee_success=string(BattleEditor_RuntimeMercyValue("mercy_flee_success_text",""));
 				var text="";
-				if(GOLD==0&&EXP==0){
+				if(string_length(string_trim(custom_flee_success))>0){
+					text=TextTyper_CompileMarkup(custom_flee_success).text;
+				}else if(GOLD==0&&EXP==0){
 					var rand=irandom(20);
-					var fled_text="* Escaped...";
+					var fled_text="* 成功逃跑了……";
 					if(rand<2){
-						fled_text="* I'm outta here.";
+						fled_text="* 我先走一步。";
 					}else if(rand==2){
-						fled_text="* I've got better to do.";
+						fled_text="* 我还有更重要的事要做。";
 					}else if(rand==3){
-						fled_text="* Don't slow me down.";
+						fled_text="* 别拖我的后腿。";
 					}else{
-						fled_text="* Escaped...";
+						fled_text="* 成功逃跑了……";
 					}
 					text+=fled_text;
 				}else{
 					text+="{define `EXP` "+string(EXP)+"}"+"{define `GOLD` "+string(GOLD)+"}";
-					text+="* Ran away with {insert EXP} EXP&  and {insert GOLD} GOLD.";
+					text+="* 逃跑时带走了 {insert EXP} 点 EXP&  和 {insert GOLD} G。";
+				}
+				if(GOLD!=0||EXP!=0){
 					Player_SetExp(Player_GetExp()+Battle_GetRewardExp());
 					Player_SetGold(Player_GetGold()+Battle_GetRewardGold());
 					if(Player_UpdateLv()){
@@ -70,6 +87,13 @@ function Battle_EndMenu() {
 				}
 				Battle_SetDialog(text,true);
 			}else{
+				if(BUTTON==BATTLE_MENU_CHOICE_BUTTON.MERCY && MERCY==BATTLE_MENU_CHOICE_MERCY.FLEE){
+					var custom_flee_fail=string(BattleEditor_RuntimeMercyValue("mercy_flee_fail_text",""));
+					if(string_length(string_trim(custom_flee_fail))>0){
+						Dialog_Add(TextTyper_CompileMarkup(custom_flee_fail).text);
+						Dialog_Start();
+					}
+				}
 				Battle_GotoNextState();
 			}
 		}

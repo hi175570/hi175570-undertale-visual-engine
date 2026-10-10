@@ -1,0 +1,2 @@
+owner=noone;
+depth=(DEPTH_BATTLE.SOUL+DEPTH_BATTLE.BEAM)*0.5;

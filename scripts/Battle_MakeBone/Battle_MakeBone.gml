@@ -1,4 +1,78 @@
-///@arg x,y,length,hspeed,vspeed,type,out,angle,rotate,auto_destroy,duration,follow,follow_board,follow_target,follow_angle,point,point_at,follow_x,follow_y
+/// Draws the spike Bone through its authored nine-slice. The normal tail and
+/// spike tip keep their pixel size; only the two-pixel middle strip stretches.
+/// This is shared by the real bullet and the editor preview so authoring and
+/// runtime cannot disagree about the visible length.
+function Battle_DrawBoneSpikeAt(draw_x,draw_y,bone_length,bone_angle,point_origin,draw_color=c_white,draw_alpha=1) {
+    var visible_length=max(1,real(bone_length)+10);
+    var local_left=round(real(point_origin))==1?0:-visible_length*0.5;
+    var old_world=matrix_get(matrix_world);
+    var bone_world=matrix_build(draw_x,draw_y,0,0,0,bone_angle,1,1,1);
+    matrix_set(matrix_world,matrix_multiply(bone_world,old_world));
+    draw_sprite_stretched_ext(spr_bone_spike,0,local_left,-5,visible_length,10,draw_color,draw_alpha);
+    matrix_set(matrix_world,old_world);
+}
+
+/// Returns whether one separating axis keeps the triangle and rectangle apart.
+/// Axes do not need to be normalised: only their projected intervals matter.
+function Battle_TriangleRectSeparated(a_x,a_y,b_x,b_y,c_x,c_y,rect_left,rect_top,rect_right,rect_bottom,axis_x,axis_y) {
+    var triangle_a=a_x*axis_x+a_y*axis_y;
+    var triangle_b=b_x*axis_x+b_y*axis_y;
+    var triangle_c=c_x*axis_x+c_y*axis_y;
+    var triangle_min=min(triangle_a,min(triangle_b,triangle_c));
+    var triangle_max=max(triangle_a,max(triangle_b,triangle_c));
+
+    var rect_center_x=(rect_left+rect_right)*0.5;
+    var rect_center_y=(rect_top+rect_bottom)*0.5;
+    var rect_half_width=(rect_right-rect_left)*0.5;
+    var rect_half_height=(rect_bottom-rect_top)*0.5;
+    var rect_center_projection=rect_center_x*axis_x+rect_center_y*axis_y;
+    var rect_radius=rect_half_width*abs(axis_x)+rect_half_height*abs(axis_y);
+    return triangle_max<rect_center_projection-rect_radius
+        ||triangle_min>rect_center_projection+rect_radius;
+}
+
+/// Axis-aligned target collision boxes are sufficient here: the original call
+/// explicitly requested non-precise collision. SAT keeps the small pointed end
+/// triangular instead of replacing it with an oversized rectangular hitbox.
+function Battle_TriangleRectOverlap(a_x,a_y,b_x,b_y,c_x,c_y,rect_left,rect_top,rect_right,rect_bottom) {
+    if(Battle_TriangleRectSeparated(a_x,a_y,b_x,b_y,c_x,c_y,rect_left,rect_top,rect_right,rect_bottom,1,0)) return false;
+    if(Battle_TriangleRectSeparated(a_x,a_y,b_x,b_y,c_x,c_y,rect_left,rect_top,rect_right,rect_bottom,0,1)) return false;
+    if(Battle_TriangleRectSeparated(a_x,a_y,b_x,b_y,c_x,c_y,rect_left,rect_top,rect_right,rect_bottom,-(b_y-a_y),b_x-a_x)) return false;
+    if(Battle_TriangleRectSeparated(a_x,a_y,b_x,b_y,c_x,c_y,rect_left,rect_top,rect_right,rect_bottom,-(c_y-b_y),c_x-b_x)) return false;
+    if(Battle_TriangleRectSeparated(a_x,a_y,b_x,b_y,c_x,c_y,rect_left,rect_top,rect_right,rect_bottom,-(a_y-c_y),a_x-c_x)) return false;
+    return true;
+}
+
+/// Returns the instance touching the fixed-size triangular head, or noone.
+/// The ordinary Bone mask still handles the shaft. Keeping the tip separate
+/// prevents a long Bone from stretching its triangular collision into a huge
+/// rectangle while still making the visible point genuinely dangerous.
+function Battle_BoneSpikeTipCollision(bone,target_object) {
+    if(!instance_exists(bone)||round(real(bone.bone_style))!=1) return noone;
+    var visible_length=max(1,real(bone.length)+10);
+    var local_left=round(real(bone.point))==1?0:-visible_length*0.5;
+    var tip_distance=local_left+visible_length;
+    var base_distance=max(local_left,tip_distance-6);
+    var base_x=bone.x+lengthdir_x(base_distance,bone.angle);
+    var base_y=bone.y+lengthdir_y(base_distance,bone.angle);
+    var tip_x=bone.x+lengthdir_x(tip_distance,bone.angle);
+    var tip_y=bone.y+lengthdir_y(tip_distance,bone.angle);
+    var side_a_x=base_x+lengthdir_x(2,bone.angle+90);
+    var side_a_y=base_y+lengthdir_y(2,bone.angle+90);
+    var side_b_x=base_x+lengthdir_x(2,bone.angle-90);
+    var side_b_y=base_y+lengthdir_y(2,bone.angle-90);
+    var target_count=instance_number(target_object);
+    for(var target_index=0;target_index<target_count;target_index++){
+        var target=instance_find(target_object,target_index);
+        if(instance_exists(target)&&Battle_TriangleRectOverlap(
+            side_a_x,side_a_y,side_b_x,side_b_y,tip_x,tip_y,
+            target.bbox_left,target.bbox_top,target.bbox_right,target.bbox_bottom
+        )) return target;
+    }
+    return noone;
+}
+
+///@arg x,y,length,hspeed,vspeed,type,out,angle,rotate,auto_destroy,duration,follow,follow_board,follow_target,follow_angle,point,point_at,follow_x,follow_y,*green_guard_blockable,*green_guard_destroy_on_block,*bone_style
 function Battle_MakeBone() {
     var OBJ = 0;
     var DURATION = -1;
@@ -40,7 +114,7 @@ function Battle_MakeBone() {
     }
     if (argument_count >= 14) {
         bone.follow_target = argument[13];
-        if (OBJ && instance_exists(bone.follow_target)) {
+        if (OBJ && (is_struct(bone.follow_target)||instance_exists(bone.follow_target))) {
             bone.follow_angle = bone.follow_target.angle;
             var pos = RotateAround(bone.follow_target.x, bone.follow_target.y, X, Y, bone.follow_target.x, bone.follow_target.y, bone.follow_target.angle);
             bone.x = pos[0];
@@ -63,8 +137,11 @@ function Battle_MakeBone() {
             bone.x = pos[0];
             bone.y = pos[1];
         }
-    }	
-    return bone;
+    }
+    if(argument_count >= 20) bone.green_guard_blockable=argument[19];
+    if(argument_count >= 21) bone.green_guard_destroy_on_block=argument[20];
+    if(argument_count >= 22) bone.bone_style=clamp(round(real(argument[21])),0,1);
+	return bone;
 }
 ///@arg x,length,hspeed,type,out,rotate,auto_destroy,*duration,*follow,*follow_board,*follow_target,*follow_angle,*point,*point_at,*follow_x,*follow_y
 function Battle_MakeBoneBottom() {
@@ -326,7 +403,10 @@ function Makebonecircle() {
     bone.rott = argument[14] == undefined ? 0 : duration;
     return bone;
 }
-/// @arg x,y,angle_x,angle_y,angle_z,rotate_x,rotate_y,rotate_z,scale_x,scale_y,scale_z,vspeed,hspeed,shape,type,out,*duration,*gap
+/// @arg x,y,angle_x,angle_y,angle_z,rotate_x,rotate_y,rotate_z,scale_x,scale_y,scale_z,vspeed,hspeed,shape,type,out,*duration,*edge_trim,*world_z,*perspective3d,*perspective_distance
+/// edge_trim subtracts a fixed amount from every projected edge length. For
+/// example 10 becomes 8 and 5 becomes 3 when edge_trim is 2, leaving equal
+/// visible gaps around shared corners without moving the vertices.
 function Battle_MakeBone3D() {
     var _x = argument[0];
     var _y = argument[1];
@@ -345,7 +425,7 @@ function Battle_MakeBone3D() {
     var type = argument[14];
     var out = argument[15];
     var duration = argument_count > 16 ? argument[16] : -1;
-    var GAP = argument_count > 17 ? argument[17] : 40;
+    var EDGE_TRIM = argument_count > 17 ? max(0,argument[17]) : 8;
     var inst = instance_create_depth(_x, _y, 0, battle_bullet_bone_3d);
     inst.anglex = angle_x;
     inst.angley = angle_y;
@@ -362,7 +442,25 @@ function Battle_MakeBone3D() {
     inst.type = type;
     inst.out = out;
     inst.duration = duration;
-    inst.gap = GAP;
+    inst.edge_trim = EDGE_TRIM;
+    inst.gap = EDGE_TRIM;
+    inst.world_z = argument_count > 18 ? argument[18] : 0;
+    inst.perspective3d = argument_count > 19 ? argument[19] : true;
+    inst.perspective_distance = argument_count > 20 ? max(32,argument[20]) : 420;
+    return inst;
+}
+
+/// Creates a rotating tesseract using 4D-to-3D and 3D-to-screen perspective.
+/// Arrays are [x,y,z] for 3D values and [xw,yw,zw] for 4D plane values.
+function Battle_MakeBone4D(x,y,z,angles3=[0,0,0],angles4=[0,0,0],rotate3=[0,0,0],rotate4=[0,0,0],scale4=[60,60,60,60],type=0,out=0,duration=-1,edge_trim=8) {
+    var inst=Battle_MakeBone3D(x,y,angles3[0],angles3[1],angles3[2],rotate3[0],rotate3[1],rotate3[2],scale4[0],scale4[1],scale4[2],0,0,5,type,out,duration,edge_trim,z,true,420);
+    inst.anglexw=angles4[0];
+    inst.angleyw=angles4[1];
+    inst.anglezw=angles4[2];
+    inst.angxws=rotate4[0];
+    inst.angyws=rotate4[1];
+    inst.angzws=rotate4[2];
+    inst.scalew=scale4[3];
     return inst;
 }
 ///@arg x,y,length,hspeed,vspeed,type,out,angle,rotate,auto_destroy,*duration,*scale,*extra_angle,*follow,*follow_board,*follow_angle,*point,*point_at,*follow_x,*follow_y

@@ -1,7 +1,12 @@
 _draw_black=true;
-_draw_player=true;
-_draw_soul_x=(char_player.x-camera.x)*2;
-_draw_soul_y=(char_player.y-char_player.sprite_height+17-camera.y)*2;
+_draw_player=instance_exists(char_player);
+if(_draw_player){
+	_draw_soul_x=(char_player.x-camera.x)*2;
+	_draw_soul_y=(char_player.y-char_player.sprite_height+17-camera.y)*2;
+}else{
+	_draw_soul_x=320;
+	_draw_soul_y=240;
+}
 if(Encounter_IsPauseBGM(_encounter)){
 	BGM_Pause(0);
 }

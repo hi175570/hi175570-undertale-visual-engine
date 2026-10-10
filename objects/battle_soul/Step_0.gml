@@ -42,3 +42,4 @@ if (_inv > 0) {
         image_index = 0;
     }
 }
+if(true_knife_hit_fx>0) true_knife_hit_fx=max(0,true_knife_hit_fx-global.delta_time_factor);

@@ -10,7 +10,7 @@ case SHOP_STATE.MENU:
     if (_typer_state_refresh) {
         var GOLD = Storage_GetStaticFlag(FLAG_STATIC_GOLD);
         shop._typer_state_0.text = shop._pre_inst + string(GOLD) + "G";
-        shop._typer_state_1.text = shop._pre_inst + string(Item_GetNumber()) + "/8";
+        shop._typer_state_1.text = shop._pre_inst + string(Item_GetNumber()) + "/" + string(Item_GetInventoryItems().GetCapacity());
     }
     break;
 case SHOP_STATE.BUY:
@@ -64,7 +64,7 @@ case SHOP_STATE.BUY:
     if (_typer_state_refresh) {
         var GOLD = Storage_GetStaticFlag(FLAG_STATIC_GOLD);
         shop._typer_state_0.text = shop._pre_inst + string(GOLD) + "G";
-        shop._typer_state_1.text = shop._pre_inst + string(Item_GetNumber()) + "/8";
+        shop._typer_state_1.text = shop._pre_inst + string(Item_GetNumber()) + "/" + string(Item_GetInventoryItems().GetCapacity());
     }
     break;
 case SHOP_STATE.SELL:

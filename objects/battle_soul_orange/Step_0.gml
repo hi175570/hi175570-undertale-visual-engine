@@ -1,21 +1,21 @@
 event_inherited();
 
 if (Battle_GetState() == BATTLE_STATE.IN_TURN && moveable) {
-    if (keyboard_check(vk_up) && keyboard_check(vk_right))
+    if (Input_IsHeld(INPUT.UP) && Input_IsHeld(INPUT.RIGHT))
         dir = 45;
-    else if (keyboard_check(vk_up) && keyboard_check(vk_left))
+    else if (Input_IsHeld(INPUT.UP) && Input_IsHeld(INPUT.LEFT))
         dir = 135;
-    else if (keyboard_check(vk_down) && keyboard_check(vk_left))
+    else if (Input_IsHeld(INPUT.DOWN) && Input_IsHeld(INPUT.LEFT))
         dir = 225;
-    else if (keyboard_check(vk_down) && keyboard_check(vk_right))
+    else if (Input_IsHeld(INPUT.DOWN) && Input_IsHeld(INPUT.RIGHT))
         dir = -45;
-    else if keyboard_check(vk_down)
+    else if Input_IsHeld(INPUT.DOWN)
 		dir = -90;
-    else if keyboard_check(vk_up)
+    else if Input_IsHeld(INPUT.UP)
 		dir = 90;
-    else if keyboard_check(vk_left)
+    else if Input_IsHeld(INPUT.LEFT)
 		dir = 180;
-    else if keyboard_check(vk_right)
+    else if Input_IsHeld(INPUT.RIGHT)
 		dir = 0;
 
     var SPD = Player_GetSpdTotal()

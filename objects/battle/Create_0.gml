@@ -10,6 +10,10 @@ damage=0;
 _enemy[0]=noone;
 _enemy[1]=noone;
 _enemy[2]=noone;
+// Editor projects may display up to fifteen authored enemies. Only the stock
+// first three are registered as FIGHT/ACT targets; the rest live here as
+// visual/script-controlled enemy instances.
+_battle_editor_extra_enemies=[];
 //敌人名字
 _enemy_name[0]="";
 _enemy_name[1]="";
@@ -77,6 +81,12 @@ _menu_fight_anim_time=0;
 _menu_fight_damage_time=0;
 
 _menu_item_used_last=-1;
+battle_editor_entry_active=false;
+// Deferred item-use Workspace lists are consumed by the next turn_test host
+// after enemy dialogue. The mode decides whether that list accompanies or
+// replaces the ordinary monster-turn entry.
+_battle_editor_pending_item_uid="";
+_battle_editor_pending_item_mode=BATTLE_EDITOR_ITEM_AFTER_USE.IMMEDIATE;
 
 _turn_number=0;
 _turn_info=ds_map_create();
@@ -96,4 +106,33 @@ _player_temp_inv=0;
 
 kr_timer=0;
 hurt_timer=0;
+_typed_hurt_cooldown=0;
+// Damage judgements which are explicitly allowed to overlap use independent
+// locks. Each channel still prevents several hazards of its own kind from
+// applying in the same contact window.
+_true_knife_hurt_cooldown=0;
+_blue_hurt_cooldown=0;
+_orange_hurt_cooldown=0;
+// Purple attacks reserve delayed damage without changing HP or either HP
+// limit. The next non-purple attack that really deals damage consumes it.
+_purple_occupancy=0;
+_purple_occupancy_cap=40;
+
+// Optional general-purpose battle extensions. Encounters opt in as needed.
+_shield_enabled=false;
+_shield_active=false;
+_shield_natural_max=100;
+_shield_max=100;
+_shield=100;
+_shield_drain_per_second=35;
+_shield_recover_per_second=15;
+_shield_recover_delay_seconds=0;
+_shield_recover_timer=0;
+_shield_hud_mode=BATTLE_SHIELD_HUD_MODE.BELOW_HP;
+_survival_item_enabled=false;
+_survival_item_heals=[];
+_survival_item_slot=0;
+_survival_item_cooldown=0;
+_survival_item_last_result=undefined;
+_survival_item_full_heal=false;
 

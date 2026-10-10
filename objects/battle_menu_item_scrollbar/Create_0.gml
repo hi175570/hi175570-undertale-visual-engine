@@ -4,11 +4,13 @@ y = battle_board.y;
 moveable = 0;
 _arrow = 0;
 
-NUMBER = Item_GetNumber();
+NUMBER = max(0,Item_GetNumber());
 alpha = 0;
 yy1 = y - 10 * floor(1 / 2) - 10 - _arrow;
 yy2 = y - 10 * floor(1 / 2) + 10 * 1 + _arrow;
-yy = [0, 0, 0, 0, 0, 0, 0, 0];
+// The editor inventory is not limited to the stock eight slots. Allocate one
+// marker per actual item instead of indexing a fixed eight-element array.
+yy = array_create(NUMBER,y);
 yd = global.classic_ui ? y - 10 * floor(NUMBER / 2) : y;
 if (!global.classic_ui) {
     Anim_Create(id, "alpha", ANIM_TWEEN.CUBIC, ANIM_EASE.OUT, 0, 1, 20);

@@ -1,8 +1,6 @@
 if (Player_GetHp() <= 0) {
-    var z = Storage_SetTempFlag(FLAG_TEMP_GAMEOVER_SOUL_X, x - camera.x);
-    z.Set(FLAG_TEMP_GAMEOVER_SOUL_Y, y - camera.y);
-    z.Set(FLAG_TEMP_GAMEOVER_SOUL_COLOR, image_blend);	
-    room_goto(room_gameover);
+    BattleEditor_StartGameOver(id);
+    exit;
 }
 var STATE = Battle_GetState();
 if (STATE == BATTLE_STATE.TURN_PREPARATION || STATE == BATTLE_STATE.IN_TURN) {
@@ -38,7 +36,7 @@ if (STATE == BATTLE_STATE.TURN_PREPARATION || STATE == BATTLE_STATE.IN_TURN) {
     }
 
     if (isInside[1][0]) {
-        var nearestPos, nearestDis = -1; // 最近位置和最近距离
+        var nearestPos=undefined, nearestDis = -1; // 最近位置和最近距离
         for (var i = limit_index[0]; i < boardcount; i++) { // 遍历所有框
             // 得到限制位置和距离
             if (global.boards_array[i].cover && !global.boards_array[i].isCollide[0]) continue;
@@ -50,13 +48,15 @@ if (STATE == BATTLE_STATE.TURN_PREPARATION || STATE == BATTLE_STATE.IN_TURN) {
             }
 
         }
-        x = nearestPos[0] + sprite_width / 2;
-        y = nearestPos[1];
-        distance = nearestDis;
+        if(is_array(nearestPos)){
+            x = nearestPos[0] + sprite_width / 2;
+            y = nearestPos[1];
+            distance = nearestDis;
+        }
     }
 
     if (isInside[1][1]) {
-        var nearestPos, nearestDis = -1; // 最近位置和最近距离
+        var nearestPos=undefined, nearestDis = -1; // 最近位置和最近距离
         for (var i = limit_index[1]; i < boardcount; i++) { // 遍历所有框
             // 得到限制位置和距离
             if (global.boards_array[i].cover && !global.boards_array[i].isCollide[1]) continue;
@@ -68,7 +68,7 @@ if (STATE == BATTLE_STATE.TURN_PREPARATION || STATE == BATTLE_STATE.IN_TURN) {
                 nearestDis = dis;
             }
         }
-        if (distance <= nearestDis) {
+        if (is_array(nearestPos)&&(distance <= nearestDis||distance<0)) {
             x = nearestPos[0] - sprite_width / 2;
             y = nearestPos[1];
             distance = nearestDis;
@@ -76,7 +76,7 @@ if (STATE == BATTLE_STATE.TURN_PREPARATION || STATE == BATTLE_STATE.IN_TURN) {
     }
 
     if (isInside[1][2]) {
-        var nearestPos, nearestDis = -1; // 最近位置和最近距离
+        var nearestPos=undefined, nearestDis = -1; // 最近位置和最近距离
         for (var i = limit_index[2]; i < boardcount; i++) { // 遍历所有框
             // 得到限制位置和距离
             if (global.boards_array[i].cover && !global.boards_array[i].isCollide[2]) continue;
@@ -87,7 +87,7 @@ if (STATE == BATTLE_STATE.TURN_PREPARATION || STATE == BATTLE_STATE.IN_TURN) {
                 nearestDis = dis;
             }
         }
-        if (distance <= nearestDis) {
+        if (is_array(nearestPos)&&(distance <= nearestDis||distance<0)) {
             x = nearestPos[0];
             y = nearestPos[1] + sprite_height / 2;
             distance = nearestDis;
@@ -95,7 +95,7 @@ if (STATE == BATTLE_STATE.TURN_PREPARATION || STATE == BATTLE_STATE.IN_TURN) {
     }
 
     if (isInside[1][3]) {
-        var nearestPos, nearestDis = -1; // 最近位置和最近距离
+        var nearestPos=undefined, nearestDis = -1; // 最近位置和最近距离
         for (var i = limit_index[3]; i < boardcount; i++) { // 遍历所有框
             // 得到限制位置和距离
             if (global.boards_array[i].cover && !global.boards_array[i].isCollide[3]) continue;
@@ -107,7 +107,7 @@ if (STATE == BATTLE_STATE.TURN_PREPARATION || STATE == BATTLE_STATE.IN_TURN) {
                 nearestDis = dis;
             }
         }
-        if (distance <= nearestDis) {
+        if (is_array(nearestPos)&&(distance <= nearestDis||distance<0)) {
             x = nearestPos[0];
             y = nearestPos[1] - sprite_height / 2;
         }
@@ -115,7 +115,7 @@ if (STATE == BATTLE_STATE.TURN_PREPARATION || STATE == BATTLE_STATE.IN_TURN) {
 
     distance = -1;
     if (!isInside[0][0]) {
-        var nearestPos, nearestDis = -1; // 最近位置和最近距离
+        var nearestPos=undefined, nearestDis = -1; // 最近位置和最近距离
         for (var i = 0; i < boardcount; i++) { // 遍历所有框
             // 得到限制位置和距离
             if (!global.boards_array[i].cover) {
@@ -128,13 +128,15 @@ if (STATE == BATTLE_STATE.TURN_PREPARATION || STATE == BATTLE_STATE.IN_TURN) {
                 }
             }
         }
-        x = nearestPos[0] + sprite_width / 2;
-        y = nearestPos[1];
-        distance = nearestDis;
+        if(is_array(nearestPos)){
+            x = nearestPos[0] + sprite_width / 2;
+            y = nearestPos[1];
+            distance = nearestDis;
+        }
     }
 
     if (!isInside[0][1]) {
-        var nearestPos, nearestDis = -1; // 最近位置和最近距离
+        var nearestPos=undefined, nearestDis = -1; // 最近位置和最近距离
         for (var i = 0; i < boardcount; i++) { // 遍历所有框
             // 得到限制位置和距离
             if (!global.boards_array[i].cover) {
@@ -147,7 +149,7 @@ if (STATE == BATTLE_STATE.TURN_PREPARATION || STATE == BATTLE_STATE.IN_TURN) {
                 }
             }
         }
-        if (distance <= nearestDis) {
+        if (is_array(nearestPos)&&(distance <= nearestDis||distance<0)) {
             x = nearestPos[0] - sprite_width / 2;
             y = nearestPos[1];
             distance = nearestDis;
@@ -156,7 +158,7 @@ if (STATE == BATTLE_STATE.TURN_PREPARATION || STATE == BATTLE_STATE.IN_TURN) {
     }
 
     if (!isInside[0][2]) {
-        var nearestPos, nearestDis = -1; // 最近位置和最近距离
+        var nearestPos=undefined, nearestDis = -1; // 最近位置和最近距离
         for (var i = 0; i < boardcount; i++) { // 遍历所有框
             // 得到限制位置和距离
             if (!global.boards_array[i].cover) {
@@ -169,7 +171,7 @@ if (STATE == BATTLE_STATE.TURN_PREPARATION || STATE == BATTLE_STATE.IN_TURN) {
                 }
             }
         }
-        if (distance <= nearestDis) {
+        if (is_array(nearestPos)&&(distance <= nearestDis||distance<0)) {
             x = nearestPos[0];
             y = nearestPos[1] + sprite_height / 2;
             distance = nearestDis;
@@ -177,7 +179,7 @@ if (STATE == BATTLE_STATE.TURN_PREPARATION || STATE == BATTLE_STATE.IN_TURN) {
     }
 
     if (!isInside[0][3]) {
-        var nearestPos, nearestDis = -1; // 最近位置和最近距离
+        var nearestPos=undefined, nearestDis = -1; // 最近位置和最近距离
         for (var i = 0; i < boardcount; i++) { // 遍历所有框
             // 得到限制位置和距离
             if (!global.boards_array[i].cover) {
@@ -190,7 +192,7 @@ if (STATE == BATTLE_STATE.TURN_PREPARATION || STATE == BATTLE_STATE.IN_TURN) {
                 }
             }
         }
-        if (distance <= nearestDis) {
+        if (is_array(nearestPos)&&(distance <= nearestDis||distance<0)) {
             x = nearestPos[0];
             y = nearestPos[1] - sprite_height / 2;
         }
@@ -198,12 +200,9 @@ if (STATE == BATTLE_STATE.TURN_PREPARATION || STATE == BATTLE_STATE.IN_TURN) {
 
 }
 
-if (Battle_GetState() == BATTLE_STATE.IN_TURN && moveable) {
-    if (xprevious = x && yprevious = y) {
-        global.moving = 0;
-    } else {
-        global.moving = 1;
-    }
-} else {
-    global.moving = 0;
-}
+// Blue/orange hazards use the player's input state, not the previous frame's
+// position.  Position deltas misclassify held input while blocked by a wall,
+// gravity-only motion, teleports and the frame on which a key is released.
+global.moving = Battle_GetState() == BATTLE_STATE.IN_TURN && moveable
+    && (Input_IsHeld(INPUT.UP) || Input_IsHeld(INPUT.DOWN)
+        || Input_IsHeld(INPUT.LEFT) || Input_IsHeld(INPUT.RIGHT));

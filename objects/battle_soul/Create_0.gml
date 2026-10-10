@@ -8,4 +8,6 @@ light_size = 0;
 index = 1;
 follow_board = false;
 _inv = 0;
+true_knife_hit_fx = 0;
+true_knife_hit_angle = 0;
 global.moving = 0;

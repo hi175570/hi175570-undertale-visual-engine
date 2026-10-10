@@ -1,5 +1,55 @@
 event_inherited();
 if (Battle_GetState() == BATTLE_STATE.IN_TURN && moveable) {
+    var arbitrary=[];
+    for(var rail_i=0;rail_i<array_length(point);rail_i++){
+        if(variable_struct_exists(point[rail_i],"rail") && point[rail_i].rail) array_push(arbitrary,point[rail_i]);
+    }
+    if(array_length(arbitrary)>0){
+        var nearest=arbitrary[0];
+        var nearest_dist=1000000;
+        var nearest_x=x;
+        var nearest_y=y;
+        for(var ar_i=0;ar_i<array_length(arbitrary);ar_i++){
+            var rail=arbitrary[ar_i];
+            var ux=dcos(rail.angle);
+            var uy=-dsin(rail.angle);
+            var along=clamp((x-rail.x)*ux+(y-rail.y)*uy,-rail.length*0.5,rail.length*0.5);
+            var px=rail.x+ux*along;
+            var py=rail.y+uy*along;
+            var pd=point_distance(x,y,px,py);
+            if(pd<nearest_dist){nearest=rail;nearest_dist=pd;nearest_x=px;nearest_y=py;}
+        }
+        x=nearest_x;
+        y=nearest_y;
+        var input_x=Input_IsHeld(INPUT.RIGHT)-Input_IsHeld(INPUT.LEFT);
+        var input_y=Input_IsHeld(INPUT.DOWN)-Input_IsHeld(INPUT.UP);
+        var rail_x=dcos(nearest.angle);
+        var rail_y=-dsin(nearest.angle);
+        // Normal rails read screen-space input and keep the soul upright.
+        // World rails rotate the local coordinate system: local LEFT/RIGHT
+        // follows the rail even when the whole world is turned.
+        var input_along=nearest.rotate_mode ? input_x : input_x*rail_x+input_y*rail_y;
+        var rail_speed=Player_GetSpdTotal()*(Input_IsHeld(INPUT.CANCEL)?0.5:1)*global.delta_time_factor;
+        var next_along=clamp((x-nearest.x)*rail_x+(y-nearest.y)*rail_y+input_along*rail_speed,-nearest.length*0.5,nearest.length*0.5);
+        x=nearest.x+rail_x*next_along;
+        y=nearest.y+rail_y*next_along;
+        var target_angle=nearest.rotate_mode ? nearest.angle : 0;
+        image_angle+=angle_difference(image_angle,target_angle)*min(1,0.22*global.delta_time_factor);
+
+        // Arbitrary rails own their motion while active. The parent Step has
+        // already run once at the top of this event, so do not run it twice.
+        for(var move_i=array_length(point)-1;move_i>=0;move_i--){
+            var move_rail=point[move_i];
+            if(!(variable_struct_exists(move_rail,"rail") && move_rail.rail)) continue;
+            move_rail.x+=move_rail.hspeed*global.delta_time_factor;
+            move_rail.y+=move_rail.vspeed*global.delta_time_factor;
+            if(move_rail.duration==0) move_rail.destroyed=1;
+            else if(move_rail.duration>0) move_rail.duration-=global.delta_time_factor;
+            if(move_rail.auto_destroy && (move_rail.y<0 || move_rail.y>room_height || move_rail.x<0 || move_rail.x>room_width)) move_rail.destroyed=1;
+            if(move_rail.destroyed) array_delete(point,move_i,1);
+        }
+        exit;
+    }
     var px = [];
     var py = [];
     var ps = array_length(point);
@@ -19,6 +69,35 @@ if (Battle_GetState() == BATTLE_STATE.IN_TURN && moveable) {
     function(a, b) {
         return a.y > b.y;
     });
+
+    // A newly switched purple soul may arrive between its rails. Snap once to
+    // the nearest available horizontal or vertical rail so movement can begin
+    // immediately instead of leaving the player stranded.
+    if(_needs_track_snap && (array_length(px)>0 || array_length(py)>0)){
+        var bestv=-1, besth=-1, bestvd=1000000000, besthd=1000000000;
+        for(var snap_i=0;snap_i<array_length(px);snap_i++){
+            var candidate_x=abs(x-px[snap_i].x);
+            if(candidate_x<bestvd){
+                bestvd=candidate_x;
+                bestv=snap_i;
+            }
+        }
+        for(var snap_j=0;snap_j<array_length(py);snap_j++){
+            var candidate_y=abs(y-py[snap_j].y);
+            if(candidate_y<besthd){
+                besthd=candidate_y;
+                besth=snap_j;
+            }
+        }
+        if(bestv>=0 && (besth<0 || bestvd<=besthd)){
+            x=px[bestv].x;
+            moving_direction=1;
+        }else if(besth>=0){
+            y=py[besth].y;
+            moving_direction=0;
+        }
+        _needs_track_snap=false;
+    }
 
     if (cross_step>0) {
         if (is_struct(cross_start) && is_struct(cross_target) && !cross_start.destroyed && !cross_start.destroyed) {
@@ -136,7 +215,7 @@ if (Battle_GetState() == BATTLE_STATE.IN_TURN && moveable) {
         point[i].x += point[i].hspeed * global.delta_time_factor;
         point[i].y += point[i].vspeed * global.delta_time_factor;
         if (point[i].duration == 0) point[i].destroyed = 1;
-        else if (point[i] > 0) point[i].duration -= 1 * global.delta_time_factor;
+        else if (point[i].duration > 0) point[i].duration -= 1 * global.delta_time_factor;
         if (point[i].auto_destroy && (point[i].y < 0 || point[i].y > room_height || point[i].x < 0 || point[i].x > room_width)) point[i].destroyed = 1;
         if (point[i].destroyed) {
             delete point[i];

@@ -4,7 +4,7 @@ function Item_GetTextEat() {
 
 	var result="";
 	result+="{define `ITEM` `"+NAME+"`}";
-	result+="* You ate the {insert ITEM}.";
+	result+="* 你吃掉了{insert ITEM}。";
 
 	return result;
 
